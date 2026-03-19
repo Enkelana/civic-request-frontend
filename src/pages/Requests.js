@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getRequests, getCategories, getCitizens, createRequest, updateRequestStatus, deleteRequest } from '../services/api';
+import { exportToExcel, exportToPDF } from '../services/exportService';
 
 const statusLabels = { 0: 'Në Pritje', 1: 'Në Process', 2: 'Zgjidhur', 3: 'Refuzuar' };
 const statusColors = { 0: '#FFC000', 1: '#ED7D31', 2: '#70AD47', 3: '#FF0000' };
+
+
+
 
 function Requests() {
   const [requests, setRequests] = useState([]);
@@ -175,7 +179,25 @@ function Requests() {
       </div>
 
       {/* LISTA */}
-      <h3>Lista e Kërkesave ({requests.length})</h3>
+     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+  <h3 style={{ margin: 0 }}>Lista e Kërkesave ({requests.length})</h3>
+  <div style={{ display: 'flex', gap: '10px' }}>
+    <button onClick={() => exportToExcel(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
+      style={{
+        background: '#1D6F42', color: 'white', border: 'none',
+        padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
+      }}>
+      📊 Eksport Excel
+    </button>
+    <button onClick={() => exportToPDF(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
+      style={{
+        background: '#C0392B', color: 'white', border: 'none',
+        padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
+      }}>
+      📄 Eksport PDF
+    </button>
+  </div>
+</div>
       {requests.length === 0 ? (
         <p style={{ color: '#888', fontStyle: 'italic' }}>⚠️ Nuk u gjet asnjë kërkesë.</p>
       ) : (
