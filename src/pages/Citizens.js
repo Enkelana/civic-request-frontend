@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { getCitizens, createCitizen } from '../services/api';
+import Pagination from '../components/Pagination';
 
 function Citizens() {
   const [citizens, setCitizens] = useState([]);
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', nationalId: '' });
   const [message, setMessage] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchCitizens = async () => {
     const res = await getCitizens();
@@ -13,11 +16,18 @@ function Citizens() {
 
   useEffect(() => { fetchCitizens(); }, []);
 
+  const totalPages = Math.ceil(citizens.length / itemsPerPage);
+  const paginatedCitizens = citizens.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const handleSubmit = async () => {
     try {
       await createCitizen(form);
       setMessage('✅ Qytetari u shtua me sukses!');
       setForm({ fullName: '', email: '', phone: '', nationalId: '' });
+      setCurrentPage(1);
       fetchCitizens();
     } catch (err) {
       setMessage('❌ Gabim: ' + (err.response?.data || 'Ndodhi një gabim'));
@@ -53,26 +63,37 @@ function Citizens() {
 
       {/* LISTA */}
       <h3>Lista e Qytetarëve ({citizens.length})</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#2E75B6', color: 'white' }}>
-            <th style={{ padding: '10px' }}>ID</th>
-            <th style={{ padding: '10px' }}>Emri</th>
-            <th style={{ padding: '10px' }}>Email</th>
-            <th style={{ padding: '10px' }}>Telefon</th>
-          </tr>
-        </thead>
-        <tbody>
-          {citizens.map((c, i) => (
-            <tr key={c.id} style={{ background: i % 2 === 0 ? '#f9f9f9' : 'white' }}>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{c.id}</td>
-              <td style={{ padding: '10px' }}>{c.fullName}</td>
-              <td style={{ padding: '10px' }}>{c.email}</td>
-              <td style={{ padding: '10px' }}>{c.phone}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {citizens.length === 0 ? (
+        <p style={{ color: '#888', fontStyle: 'italic' }}>⚠️ Nuk ka qytetarë të regjistruar.</p>
+      ) : (
+        <>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#2E75B6', color: 'white' }}>
+                <th style={{ padding: '10px' }}>ID</th>
+                <th style={{ padding: '10px' }}>Emri</th>
+                <th style={{ padding: '10px' }}>Email</th>
+                <th style={{ padding: '10px' }}>Telefon</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedCitizens.map((c, i) => (
+                <tr key={c.id} style={{ background: i % 2 === 0 ? '#f9f9f9' : 'white' }}>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{c.id}</td>
+                  <td style={{ padding: '10px' }}>{c.fullName}</td>
+                  <td style={{ padding: '10px' }}>{c.email}</td>
+                  <td style={{ padding: '10px' }}>{c.phone}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </>
+      )}
     </div>
   );
 }
