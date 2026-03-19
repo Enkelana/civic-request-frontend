@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getRequests, getCategories, getCitizens, createRequest, updateRequestStatus, deleteRequest } from '../services/api';
 import { exportToExcel, exportToPDF } from '../services/exportService';
+import Pagination from '../components/Pagination';
 
 const statusLabels = { 0: 'Në Pritje', 1: 'Në Process', 2: 'Zgjidhur', 3: 'Refuzuar' };
 const statusColors = { 0: '#FFC000', 1: '#ED7D31', 2: '#70AD47', 3: '#FF0000' };
-
-
-
 
 function Requests() {
   const [requests, setRequests] = useState([]);
@@ -19,6 +17,8 @@ function Requests() {
   const [filterStatus, setFilterStatus] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchAll = async () => {
     const [reqRes, catRes, citRes] = await Promise.all([
@@ -31,9 +31,16 @@ function Requests() {
 
   useEffect(() => { fetchAll(); }, []);
 
+  const totalPages = Math.ceil(requests.length / itemsPerPage);
+  const paginatedRequests = requests.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const handleSearch = async () => {
     try {
       setIsSearching(true);
+      setCurrentPage(1);
       let url = 'http://localhost:5280/api/requests/search?';
       if (searchTitle.trim()) url += `title=${encodeURIComponent(searchTitle.trim())}&`;
       if (filterStatus) url += `status=${filterStatus}&`;
@@ -55,6 +62,7 @@ function Requests() {
     setFilterStatus('');
     setFilterCategory('');
     setIsSearching(false);
+    setCurrentPage(1);
     const res = await getRequests();
     setRequests(res.data);
   };
@@ -68,6 +76,7 @@ function Requests() {
       });
       setMessage('✅ Kërkesa u shtua!');
       setForm({ title: '', description: '', citizenId: '', categoryId: '' });
+      setCurrentPage(1);
       fetchAll();
     } catch (err) {
       setMessage('❌ Gabim: ' + (err.response?.data || 'Ndodhi një gabim'));
@@ -83,6 +92,7 @@ function Requests() {
   const handleDelete = async (id) => {
     if (window.confirm('Jeni i sigurt?')) {
       await deleteRequest(id);
+      setCurrentPage(1);
       if (isSearching) handleSearch();
       else fetchAll();
     }
@@ -179,69 +189,71 @@ function Requests() {
       </div>
 
       {/* LISTA */}
-     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-  <h3 style={{ margin: 0 }}>Lista e Kërkesave ({requests.length})</h3>
-  <div style={{ display: 'flex', gap: '10px' }}>
-    <button onClick={() => exportToExcel(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
-      style={{
-        background: '#1D6F42', color: 'white', border: 'none',
-        padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-      }}>
-      📊 Eksport Excel
-    </button>
-    <button onClick={() => exportToPDF(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
-      style={{
-        background: '#C0392B', color: 'white', border: 'none',
-        padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-      }}>
-      📄 Eksport PDF
-    </button>
-  </div>
-</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+        <h3 style={{ margin: 0 }}>Lista e Kërkesave ({requests.length})</h3>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => exportToExcel(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
+            style={{ background: '#1D6F42', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
+            📊 Eksport Excel
+          </button>
+          <button onClick={() => exportToPDF(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
+            style={{ background: '#C0392B', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
+            📄 Eksport PDF
+          </button>
+        </div>
+      </div>
+
       {requests.length === 0 ? (
         <p style={{ color: '#888', fontStyle: 'italic' }}>⚠️ Nuk u gjet asnjë kërkesë.</p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#2E75B6', color: 'white' }}>
-              <th style={{ padding: '10px' }}>ID</th>
-              <th style={{ padding: '10px' }}>Titulli</th>
-              <th style={{ padding: '10px' }}>Qytetari</th>
-              <th style={{ padding: '10px' }}>Kategoria</th>
-              <th style={{ padding: '10px' }}>Statusi</th>
-              <th style={{ padding: '10px' }}>Veprime</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((r, i) => (
-              <tr key={r.id} style={{ background: i % 2 === 0 ? '#f9f9f9' : 'white' }}>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{r.id}</td>
-                <td style={{ padding: '10px' }}>{r.title}</td>
-                <td style={{ padding: '10px' }}>{r.citizen?.fullName}</td>
-                <td style={{ padding: '10px' }}>{r.category?.name}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>
-                  <span style={{
-                    background: statusColors[r.status], color: 'white',
-                    padding: '4px 10px', borderRadius: '20px', fontSize: '12px'
-                  }}>{statusLabels[r.status]}</span>
-                </td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>
-                  <select onChange={e => handleStatus(r.id, e.target.value)} defaultValue=""
-                    style={{ marginRight: '8px', padding: '4px', borderRadius: '6px' }}>
-                    <option value="" disabled>Ndrysho</option>
-                    <option value="InProgress">Në Process</option>
-                    <option value="Resolved">Zgjidhur</option>
-                    <option value="Rejected">Refuzuar</option>
-                  </select>
-                  <button onClick={() => handleDelete(r.id)} style={{
-                    background: '#FF4444', color: 'white', border: 'none',
-                    padding: '4px 10px', borderRadius: '6px', cursor: 'pointer'
-                  }}>Fshi</button>
-                </td>
+        <>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#2E75B6', color: 'white' }}>
+                <th style={{ padding: '10px' }}>ID</th>
+                <th style={{ padding: '10px' }}>Titulli</th>
+                <th style={{ padding: '10px' }}>Qytetari</th>
+                <th style={{ padding: '10px' }}>Kategoria</th>
+                <th style={{ padding: '10px' }}>Statusi</th>
+                <th style={{ padding: '10px' }}>Veprime</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {paginatedRequests.map((r, i) => (
+                <tr key={r.id} style={{ background: i % 2 === 0 ? '#f9f9f9' : 'white' }}>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{r.id}</td>
+                  <td style={{ padding: '10px' }}>{r.title}</td>
+                  <td style={{ padding: '10px' }}>{r.citizen?.fullName}</td>
+                  <td style={{ padding: '10px' }}>{r.category?.name}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                    <span style={{
+                      background: statusColors[r.status], color: 'white',
+                      padding: '4px 10px', borderRadius: '20px', fontSize: '12px'
+                    }}>{statusLabels[r.status]}</span>
+                  </td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                    <select onChange={e => handleStatus(r.id, e.target.value)} defaultValue=""
+                      style={{ marginRight: '8px', padding: '4px', borderRadius: '6px' }}>
+                      <option value="" disabled>Ndrysho</option>
+                      <option value="InProgress">Në Process</option>
+                      <option value="Resolved">Zgjidhur</option>
+                      <option value="Rejected">Refuzuar</option>
+                    </select>
+                    <button onClick={() => handleDelete(r.id)} style={{
+                      background: '#FF4444', color: 'white', border: 'none',
+                      padding: '4px 10px', borderRadius: '6px', cursor: 'pointer'
+                    }}>Fshi</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </>
       )}
     </div>
   );
