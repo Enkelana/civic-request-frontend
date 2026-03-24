@@ -30,9 +30,9 @@ function Navbar() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <span style={{ color: '#BDD7EE', fontSize: '14px' }}>
-          👤 {fullName}
-        </span>
+        <Link to="/profile" style={{ color: '#BDD7EE', fontSize: '14px', textDecoration: 'none' }}>
+  👤 {fullName}
+</Link>
         <button onClick={toggleDarkMode} style={{
           background: darkMode ? '#f0c040' : '#34495e',
           color: darkMode ? '#1a1a2e' : 'white',

@@ -1,5 +1,6 @@
 import axios from 'axios';
-
+export const getProfile = () => API.get('/auth/profile');
+export const changePassword = (data) => API.put('/auth/change-password', data);
 const API = axios.create({
   baseURL: 'http://localhost:5280/api',
 });
