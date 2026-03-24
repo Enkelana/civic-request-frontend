@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -47,6 +48,9 @@ function Login() {
           padding: '12px', width: '100%', borderRadius: '8px',
           cursor: 'pointer', fontSize: '16px'
         }}>Hyr</button>
+        <p style={{ textAlign: 'center', marginTop: '15px', fontSize: '14px', color: '#666' }}>
+  Nuk ke llogari? <Link to="/register" style={{ color: '#2E75B6' }}>Regjistrohu</Link>
+</p>
       </div>
     </div>
   );

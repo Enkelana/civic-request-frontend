@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Citizens from './pages/Citizens';
 import Requests from './pages/Requests';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -18,6 +19,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/*" element={
             <PrivateRoute>
               <>
