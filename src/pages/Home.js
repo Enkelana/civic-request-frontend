@@ -6,7 +6,7 @@ import {
   LineElement, Title
 } from 'chart.js';
 import { Pie, Bar, Line } from 'react-chartjs-2';
-
+import { useTheme } from '../context/ThemeContext';
 ChartJS.register(
   ArcElement, Tooltip, Legend,
   CategoryScale, LinearScale, BarElement,
@@ -16,7 +16,7 @@ ChartJS.register(
 function Home() {
   const [requests, setRequests] = useState([]);
   const [citizens, setCitizens] = useState([]);
-
+const { darkMode } = useTheme();
   useEffect(() => {
     const fetchData = async () => {
       const [reqRes, citRes] = await Promise.all([getRequests(), getCitizens()]);
@@ -95,9 +95,9 @@ function Home() {
     { label: "Qytetarë", value: stats.citizens, color: "#7030A0" },
   ];
 
-  return (
-    <div style={{ padding: '30px' }}>
-      <h2 style={{ color: '#1F4E79', marginBottom: '25px' }}>📊 Dashboard</h2>
+return (
+  <div style={{ padding: '30px', background: darkMode ? '#16213e' : '#f5f7fa', minHeight: '100vh' }}>
+  <h2 style={{ color: darkMode ? '#BDD7EE' : '#1F4E79', marginBottom: '25px' }}>📊 Dashboard</h2>
 
       {/* KARTAT */}
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '35px' }}>
@@ -105,7 +105,7 @@ function Home() {
           <div key={i} style={{
             background: card.color, color: 'white', borderRadius: '12px',
             padding: '20px 30px', minWidth: '140px', textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+         boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.15)'
           }}>
             <div style={{ fontSize: '38px', fontWeight: 'bold' }}>{card.value}</div>
             <div style={{ fontSize: '13px', marginTop: '6px' }}>{card.label}</div>
@@ -117,16 +117,16 @@ function Home() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginBottom: '25px' }}>
 
         {/* PIE */}
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-          <h3 style={{ color: '#1F4E79', marginTop: 0 }}>🥧 Kërkesa sipas Statusit</h3>
+        <div style={{ background: darkMode ? '#1a1a2e' : 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+          <h3 style={{ color: darkMode ? '#BDD7EE' : '#1F4E79', marginTop: 0 }}>🥧 Kërkesa sipas Statusit</h3>
           <div style={{ height: '280px', display: 'flex', justifyContent: 'center' }}>
             <Pie data={pieData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }} />
           </div>
         </div>
 
         {/* BAR */}
-        <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-          <h3 style={{ color: '#1F4E79', marginTop: 0 }}>📊 Kërkesa sipas Kategorisë</h3>
+        <div style={{ background: darkMode ? '#1a1a2e' : 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+          <h3 style={{ color: darkMode ? '#BDD7EE' : '#1F4E79', marginTop: 0 }}>📊 Kërkesa sipas Kategorisë</h3>
           <div style={{ height: '280px' }}>
             <Bar data={barData} options={{
               maintainAspectRatio: false,
@@ -138,8 +138,8 @@ function Home() {
       </div>
 
       {/* LINE */}
-      <div style={{ background: 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-        <h3 style={{ color: '#1F4E79', marginTop: 0 }}>📈 Kërkesa sipas Datës</h3>
+<div style={{ background: darkMode ? '#1a1a2e' : 'white', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+         <h3 style={{ color: darkMode ? '#BDD7EE' : '#1F4E79', marginTop: 0 }}>📈 Kërkesa sipas Datës</h3>
         <div style={{ height: '250px' }}>
           <Line data={lineData} options={{
             maintainAspectRatio: false,

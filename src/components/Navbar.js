@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 function Navbar() {
   const navigate = useNavigate();
   const fullName = localStorage.getItem('fullName') || 'Zyrtar';
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -13,7 +15,8 @@ function Navbar() {
 
   return (
     <nav style={{
-      background: '#1F4E79', padding: '15px 30px',
+      background: darkMode ? '#1a1a2e' : '#1F4E79',
+      padding: '15px 30px',
       display: 'flex', alignItems: 'center',
       justifyContent: 'space-between'
     }}>
@@ -30,6 +33,14 @@ function Navbar() {
         <span style={{ color: '#BDD7EE', fontSize: '14px' }}>
           👤 {fullName}
         </span>
+        <button onClick={toggleDarkMode} style={{
+          background: darkMode ? '#f0c040' : '#34495e',
+          color: darkMode ? '#1a1a2e' : 'white',
+          border: 'none', padding: '8px 16px',
+          borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
+        }}>
+          {darkMode ? '☀️ Light' : '🌙 Dark'}
+        </button>
         <button onClick={handleLogout} style={{
           background: '#C0392B', color: 'white', border: 'none',
           padding: '8px 16px', borderRadius: '8px', cursor: 'pointer',
