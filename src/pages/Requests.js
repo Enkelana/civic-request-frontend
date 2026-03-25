@@ -3,15 +3,18 @@ import axios from 'axios';
 import { getRequests, getCategories, getCitizens, createRequest, updateRequestStatus, deleteRequest } from '../services/api';
 import { exportToExcel, exportToPDF } from '../services/exportService';
 import Pagination from '../components/Pagination';
+import { useTheme } from '../context/ThemeContext';
 
 const statusLabels = { 0: 'Në Pritje', 1: 'Në Process', 2: 'Zgjidhur', 3: 'Refuzuar' };
 const statusColors = { 0: '#FFC000', 1: '#ED7D31', 2: '#70AD47', 3: '#FF0000' };
 
 function Requests() {
+  const { darkMode } = useTheme();
   const [requests, setRequests] = useState([]);
   const [categories, setCategories] = useState([]);
   const [citizens, setCitizens] = useState([]);
   const [form, setForm] = useState({ title: '', description: '', citizenId: '', categoryId: '' });
+  const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [searchTitle, setSearchTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -36,6 +39,20 @@ function Requests() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.title || form.title.length < 5)
+      newErrors.title = 'Titulli duhet të ketë të paktën 5 karaktere!';
+    if (!form.description || form.description.length < 10)
+      newErrors.description = 'Përshkrimi duhet të ketë të paktën 10 karaktere!';
+    if (!form.citizenId)
+      newErrors.citizenId = 'Zgjidhni një qytetar!';
+    if (!form.categoryId)
+      newErrors.categoryId = 'Zgjidhni një kategori!';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSearch = async () => {
     try {
@@ -68,6 +85,8 @@ function Requests() {
   };
 
   const handleSubmit = async () => {
+    setMessage('');
+    if (!validate()) return;
     try {
       await createRequest({
         ...form,
@@ -76,6 +95,7 @@ function Requests() {
       });
       setMessage('✅ Kërkesa u shtua!');
       setForm({ title: '', description: '', citizenId: '', categoryId: '' });
+      setErrors({});
       setCurrentPage(1);
       fetchAll();
     } catch (err) {
@@ -98,23 +118,31 @@ function Requests() {
     }
   };
 
-  const inputStyle = {
-    padding: '10px', borderRadius: '8px', border: '1px solid #ccc',
-    width: '100%', marginBottom: '12px', fontSize: '14px'
-  };
+  const bg = darkMode ? '#16213e' : '#f5f7fa';
+  const cardBg = darkMode ? '#1a1a2e' : '#f0f4f8';
+  const textColor = darkMode ? '#BDD7EE' : '#1F4E79';
+
+  const inputStyle = (field) => ({
+    padding: '10px', borderRadius: '8px',
+    border: `1px solid ${errors[field] ? 'red' : '#ccc'}`,
+    width: '100%', marginBottom: '4px', fontSize: '14px',
+    boxSizing: 'border-box',
+    background: darkMode ? '#16213e' : 'white',
+    color: darkMode ? 'white' : '#333'
+  });
 
   return (
-    <div style={{ padding: '30px' }}>
-      <h2 style={{ color: '#1F4E79' }}>📋 Kërkesat</h2>
+    <div style={{ padding: '30px', background: bg, minHeight: '100vh' }}>
+      <h2 style={{ color: textColor }}>📋 Kërkesat</h2>
 
       {/* SEARCH */}
-      <div style={{ background: '#EBF5FB', borderRadius: '12px', padding: '20px', marginBottom: '25px' }}>
-        <h3 style={{ marginTop: 0, color: '#1F4E79' }}>🔍 Kërko dhe Filtro</h3>
+      <div style={{ background: cardBg, borderRadius: '12px', padding: '20px', marginBottom: '25px' }}>
+        <h3 style={{ marginTop: 0, color: textColor }}>🔍 Kërko dhe Filtro</h3>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
           <div style={{ flex: 2, minWidth: '200px' }}>
             <label style={{ fontSize: '13px', color: '#666', display: 'block', marginBottom: '5px' }}>Kërko sipas titullit</label>
             <input
-              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px', boxSizing: 'border-box' }}
+              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px', boxSizing: 'border-box', background: darkMode ? '#16213e' : 'white', color: darkMode ? 'white' : '#333' }}
               placeholder="Shkruaj titullin..."
               value={searchTitle}
               onChange={e => setSearchTitle(e.target.value)}
@@ -124,7 +152,7 @@ function Requests() {
           <div style={{ flex: 1, minWidth: '150px' }}>
             <label style={{ fontSize: '13px', color: '#666', display: 'block', marginBottom: '5px' }}>Statusi</label>
             <select
-              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px' }}
+              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px', background: darkMode ? '#16213e' : 'white', color: darkMode ? 'white' : '#333' }}
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value)}
             >
@@ -138,7 +166,7 @@ function Requests() {
           <div style={{ flex: 1, minWidth: '150px' }}>
             <label style={{ fontSize: '13px', color: '#666', display: 'block', marginBottom: '5px' }}>Kategoria</label>
             <select
-              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px' }}
+              style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', width: '100%', fontSize: '14px', background: darkMode ? '#16213e' : 'white', color: darkMode ? 'white' : '#333' }}
               value={filterCategory}
               onChange={e => setFilterCategory(e.target.value)}
             >
@@ -147,14 +175,8 @@ function Requests() {
             </select>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={handleSearch} style={{
-              background: '#2E75B6', color: 'white', border: 'none',
-              padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-            }}>🔍 Kërko</button>
-            <button onClick={handleReset} style={{
-              background: '#888', color: 'white', border: 'none',
-              padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'
-            }}>↺ Reset</button>
+            <button onClick={handleSearch} style={{ background: '#2E75B6', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>🔍 Kërko</button>
+            <button onClick={handleReset} style={{ background: '#888', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>↺ Reset</button>
           </div>
         </div>
         {isSearching && (
@@ -165,32 +187,44 @@ function Requests() {
       </div>
 
       {/* FORMA */}
-      <div style={{ background: '#f0f4f8', borderRadius: '12px', padding: '20px', maxWidth: '450px', marginBottom: '30px' }}>
-        <h3 style={{ marginTop: 0 }}>Shto Kërkesë të Re</h3>
-        <input style={inputStyle} placeholder="Titulli" value={form.title}
+      <div style={{ background: cardBg, borderRadius: '12px', padding: '20px', maxWidth: '450px', marginBottom: '30px' }}>
+        <h3 style={{ marginTop: 0, color: textColor }}>Shto Kërkesë të Re</h3>
+
+        <input style={inputStyle('title')} placeholder="Titulli (min. 5 karaktere)" value={form.title}
           onChange={e => setForm({ ...form, title: e.target.value })} />
-        <textarea style={{ ...inputStyle, height: '80px', resize: 'none' }} placeholder="Përshkrimi"
-          value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-        <select style={inputStyle} value={form.citizenId}
+        {errors.title && <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{errors.title}</p>}
+
+        <textarea style={{ ...inputStyle('description'), height: '80px', resize: 'none' }}
+          placeholder="Përshkrimi (min. 10 karaktere)"
+          value={form.description}
+          onChange={e => setForm({ ...form, description: e.target.value })} />
+        {errors.description && <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{errors.description}</p>}
+
+        <select style={inputStyle('citizenId')} value={form.citizenId}
           onChange={e => setForm({ ...form, citizenId: e.target.value })}>
           <option value="">-- Zgjidh Qytetarin --</option>
           {citizens.map(c => <option key={c.id} value={c.id}>{c.fullName}</option>)}
         </select>
-        <select style={inputStyle} value={form.categoryId}
+        {errors.citizenId && <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{errors.citizenId}</p>}
+
+        <select style={inputStyle('categoryId')} value={form.categoryId}
           onChange={e => setForm({ ...form, categoryId: e.target.value })}>
           <option value="">-- Zgjidh Kategorinë --</option>
           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
+        {errors.categoryId && <p style={{ color: 'red', fontSize: '12px', marginBottom: '8px' }}>{errors.categoryId}</p>}
+
         <button onClick={handleSubmit} style={{
           background: '#2E75B6', color: 'white', border: 'none',
-          padding: '10px 25px', borderRadius: '8px', cursor: 'pointer', fontSize: '15px'
+          padding: '10px 25px', borderRadius: '8px', cursor: 'pointer',
+          fontSize: '15px', marginTop: '8px'
         }}>Shto</button>
         {message && <p style={{ marginTop: '10px' }}>{message}</p>}
       </div>
 
       {/* LISTA */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 style={{ margin: 0 }}>Lista e Kërkesave ({requests.length})</h3>
+        <h3 style={{ margin: 0, color: textColor }}>Lista e Kërkesave ({requests.length})</h3>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={() => exportToExcel(requests, isSearching ? 'Kerkesa_Filtruara' : 'Kerkesa')}
             style={{ background: '#1D6F42', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
@@ -220,16 +254,15 @@ function Requests() {
             </thead>
             <tbody>
               {paginatedRequests.map((r, i) => (
-                <tr key={r.id} style={{ background: i % 2 === 0 ? '#f9f9f9' : 'white' }}>
-                  <td style={{ padding: '10px', textAlign: 'center' }}>{r.id}</td>
-                  <td style={{ padding: '10px' }}>{r.title}</td>
-                  <td style={{ padding: '10px' }}>{r.citizen?.fullName}</td>
-                  <td style={{ padding: '10px' }}>{r.category?.name}</td>
+                <tr key={r.id} style={{ background: i % 2 === 0 ? (darkMode ? '#1a1a2e' : '#f9f9f9') : (darkMode ? '#16213e' : 'white') }}>
+                  <td style={{ padding: '10px', textAlign: 'center', color: darkMode ? 'white' : '#333' }}>{r.id}</td>
+                  <td style={{ padding: '10px', color: darkMode ? 'white' : '#333' }}>{r.title}</td>
+                  <td style={{ padding: '10px', color: darkMode ? 'white' : '#333' }}>{r.citizen?.fullName}</td>
+                  <td style={{ padding: '10px', color: darkMode ? 'white' : '#333' }}>{r.category?.name}</td>
                   <td style={{ padding: '10px', textAlign: 'center' }}>
-                    <span style={{
-                      background: statusColors[r.status], color: 'white',
-                      padding: '4px 10px', borderRadius: '20px', fontSize: '12px'
-                    }}>{statusLabels[r.status]}</span>
+                    <span style={{ background: statusColors[r.status], color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '12px' }}>
+                      {statusLabels[r.status]}
+                    </span>
                   </td>
                   <td style={{ padding: '10px', textAlign: 'center' }}>
                     <select onChange={e => handleStatus(r.id, e.target.value)} defaultValue=""
