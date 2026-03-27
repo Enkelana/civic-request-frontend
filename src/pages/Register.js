@@ -27,7 +27,7 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:5280/api/auth/register', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register`, {
         fullName: form.fullName,
         email: form.email,
         password: form.password

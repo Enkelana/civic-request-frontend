@@ -2,7 +2,7 @@ import axios from 'axios';
 export const getProfile = () => API.get('/auth/profile');
 export const changePassword = (data) => API.put('/auth/change-password', data);
 const API = axios.create({
-  baseURL: 'http://localhost:5280/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5280/api',
 });
 
 // Shto token automatikisht në çdo kërkesë

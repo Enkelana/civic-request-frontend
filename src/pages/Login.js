@@ -10,7 +10,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://localhost:5280/api/auth/login', form);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/login`, form);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('fullName', res.data.fullName);
       navigate('/');
