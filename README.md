@@ -1,70 +1,120 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+CivicRequest Frontend
+Frontend i sistemit CivicRequest — Platforma e Kërkesave të Qytetarëve
+![React](https://img.shields.io/badge/React-18-61DAFB)
+![Axios](https://img.shields.io/badge/Axios-Latest-5A29E4)
+![Chart.js](https://img.shields.io/badge/Chart.js-Latest-FF6384)
+![Deploy](https://img.shields.io/badge/Deploy-Vercel-000000)
+---
+Përshkrimi
+CivicRequest Frontend është një React.js aplikacion që ofron një ndërfaqe moderne dhe intuitive për menaxhimin e kërkesave të qytetarëve ndaj institucioneve publike. Përfshin dashboard me grafiqe, eksport PDF/Excel, Dark Mode, dhe autentifikim të plotë me JWT.
+🌐 App Live: https://civic-request-frontend.vercel.app
+---
+ Stack Teknologjik
+Teknologjia	Versioni	Roli
+React.js	18	UI Library
+React Router DOM	Latest	Routing
+Axios	Latest	HTTP Client + JWT Interceptors
+Chart.js + react-chartjs-2	Latest	Grafiqe interaktive
+jsPDF + jspdf-autotable	Latest	Eksport PDF
+xlsx + file-saver	Latest	Eksport Excel
+React Context API	Built-in	Dark/Light Mode
+---
+📁 Struktura e Projektit
+```
+civic-request-frontend/
+├── src/
+│   ├── pages/
+│   │   ├── Login.js          # Faqja e autentifikimit
+│   │   ├── Register.js       # Regjistrim zyrtari të ri
+│   │   ├── Home.js           # Dashboard me grafiqe
+│   │   ├── Citizens.js       # Menaxhim qytetarësh
+│   │   ├── Requests.js       # Menaxhim kërkesash
+│   │   └── Profile.js        # Profili i zyrtarit
+│   ├── components/
+│   │   ├── Navbar.js         # Navigim + Logout + Dark Mode
+│   │   └── Pagination.js     # Komponent i ripërdorshëm
+│   ├── services/
+│   │   ├── api.js            # Axios instance + JWT interceptors
+│   │   └── exportService.js  # Eksport PDF dhe Excel
+│   ├── context/
+│   │   └── ThemeContext.js   # Dark/Light Mode Context
+│   ├── utils/
+│   │   └── validators.js     # Validim i formave
+│   └── App.js                # Routing + PrivateRoute
+├── .env                      # Environment variables
+└── package.json
+```
+---
+✨ Funksionalitetet
+Funksionaliteti	Përshkrimi
+🔐 Autentifikim JWT	Login, Register, Logout, token automatik
+📊 Dashboard	Statistika + Pie, Bar, Line Chart
+👥 Qytetarë	Shto, shiko, filtro me pagination
+📋 Kërkesa	CRUD i plotë + ndryshim statusi
+🔍 Kërkim & Filtrim	Sipas titullit, statusit, kategorisë
+📊 Eksport Excel	Lista e plotë ose e filtruar
+📄 Eksport PDF	Me header, tabelë dhe footer
+🌙 Dark Mode	Light/Dark theme + localStorage
+📄 Pagination	5 rekorde për faqe
+👤 Profil	Shfaq të dhëna + ndrysho fjalëkalim
+✅ Validim	Email, telefon, emër, titull
+📧 Email	Njoftime automatike nga backend
+---
+⚙️ Instalim Lokal
+Kërkesat
+Node.js v20+
+npm v10+
+Hapat
+1. Clone projektin
+```bash
+git clone https://github.com/Enkelana/civic-request-frontend.git
+cd civic-request-frontend
+```
+2. Instalo paketat
+```bash
+npm install
+```
+3. Krijo fajllin `.env`
+```env
+REACT_APP_API_URL=http://localhost:5280/api
+```
+> ⚠️ Për production: `REACT_APP_API_URL=https://civic-request-api.onrender.com/api`
+4. Starto projektin
+```bash
+npm start
+```
+5. Hap në browser
+```
+http://localhost:3000
+```
+---
+🌐 Deploy (Vercel)
+Projekti është i konfiguruar për deploy automatik në Vercel nga GitHub.
+Environment Variable në Vercel:
+```
+REACT_APP_API_URL = https://civic-request-api.onrender.com/api
+```
+---
+📱 Faqet
+Faqja	URL	Përshkrimi
+Login	`/login`	Autentifikim me email + fjalëkalim
+Register	`/register`	Regjistrim zyrtar i ri
+Dashboard	`/`	Statistika + grafiqe
+Qytetarët	`/citizens`	Lista + shtim qytetarësh
+Kërkesat	`/requests`	Lista + kërkim + eksport
+Profili	`/profile`	Të dhëna + ndryshim fjalëkalimi
+---
+🔒 Autentifikim
+Aplikacioni përdor JWT Token për autentifikim:
+Pas login-it, token ruhet në `localStorage`
+Axios interceptor shton automatikisht `Authorization: Bearer {token}` në çdo kërkesë
+Nëse token skadon, redirect automatik te `/login`
+`PrivateRoute` mbron të gjitha faqet e brendshme
+---
+👤 Autor
+Enkelana 
+---
+🔗 Linke
+🌐 App Live: https://civic-request-frontend.vercel.app
+📡 Backend API: https://civic-request-api.onrender.com
+💻 Backend Repo: https://github.com/Enkelana/civic-request-api
